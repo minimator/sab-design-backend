@@ -24,9 +24,20 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend")));
 
   // Catch-all route for SPA (must be after API routes)
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "index.html"));
-  });
+  const frontendRouter = require('express').Router();
+const fs = require('fs');
+
+frontendRouter.get(/^\/.*$/, (req, res) => {
+  const indexPath = path.join(__dirname, "../frontend/index.html");
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).send("Frontend not found");
+  }
+});
+
+app.use(frontendRouter);
+
 }
 
 // Port
