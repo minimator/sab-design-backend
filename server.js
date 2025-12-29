@@ -1,44 +1,31 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const connectDB = require("./config/db");
 
 const app = express();
 
-// Connect to MongoDB
+//  Connect to MongoDB (ONLY ONCE)
 connectDB();
 
-// Middleware
-app.use(cors());
+//  Middleware
 app.use(express.json());
-
-// Health check (VERY IMPORTANT for Render)
-app.get("/", (req, res) => {
-  res.status(200).send("Backend is running");
-});
-
-// Enable CORS (allow frontend requests)
 app.use(cors({
   origin: "https://sab-design-frontend.onrender.com"
 }));
 
+//  Health check (important for Render)
+app.get("/", (req, res) => {
+  res.status(200).send("Backend is running");
+});
 
-app.use(express.json());
-
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log(err));
-
-// API routes
+//  API routes
 app.use("/api/contact", require("./routes/contactRoutes"));
 app.use("/api/projects", require("./routes/projectRoutes"));
 app.use("/api/auth", require("./routes/authRoutes"));
 
-// Port (Render provides this automatically)
+//  Port (Render provides PORT automatically)
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
